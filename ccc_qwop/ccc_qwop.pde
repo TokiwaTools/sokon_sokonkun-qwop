@@ -1,8 +1,18 @@
+/*
+Q：左太ももを後ろへ、右太ももを前へ (股を閉じる)
+W：右太ももを後ろへ、左太ももを前へ (股を開く)
+O：左ひざを曲げる
+P：右ひざを曲げる
+*/
+
 import fisica.*;
+import gifAnimation.*;
 
 FWorld world;
-
-color bodyColor = #74FFFE;
+FCircle body, leftEye, rightEye, leftHand, rightHand, leftFoot, rightFoot;
+FBox leftArm, rightArm, leftThigh, rightThigh, leftLeg, rightLeg;
+FRevoluteJoint leftBodyEyeJoint, rightBodyEyeJoint, leftBodyArmJoint, rightBodyArmJoint, leftBodyThighJoint, rightBodyThighJoint, leftHandArmJoint, rightHandArmJoint, leftThighLegJoint, rightThighLegJoint, leftLegFootJoint, rightLegFootJoint;
+GifMaker gifMaker;
 
 void setup() {
   fullScreen();
@@ -15,6 +25,11 @@ void setup() {
   world.setGravity(0, -200);
 
   createPlayer(0, 100, 480);
+/*
+  gifMaker = new GifMaker(this, "ss.gif");
+  gifMaker.setRepeat(0);
+  gifMaker.setDelay(20)
+*/
 }
 
 void draw() {
@@ -24,51 +39,70 @@ void draw() {
 
   world.step();
   world.draw();
+//  gifMaker.addFrame();
 }
-
+/*
+void stop() {
+  gifMaker.finish();
+  super.stop();
+}
+*/
 void keyPressed() {
+  switch (key) {
+    case 'q':
+      leftBodyThighJoint.setReferenceAngle(PI/3);
+      rightBodyThighJoint.setReferenceAngle(-PI/3);
+    break;
+    case 'w':
+    break;
+    case 'o':
+    break;
+    case 'p':
+    break;
+  }
 }
 
 //x, y: 地上に接する点 足と足の間
 //w: bodyの幅
 void createPlayer(float x, float y, float w) {
-  FCircle body = new FCircle(w);
+  body = new FCircle(w);
   body.setPosition(x, y + 13.0/12*w);
 
-  FCircle leftEye = new FCircle(w/4);
+  leftEye = new FCircle(w/4);
   leftEye.setPosition(x - w*5/16.0, y + (13.0/12+5/16.0*pow(3, 0.5))*w);
-  FCircle rightEye = new FCircle(w/4);
+  rightEye = new FCircle(w/4);
   rightEye.setPosition(x + w*5/16.0, y + (13.0/12+5/16.0*pow(3, 0.5))*w);
 
-  FCircle leftHand = new FCircle(w/6);
+  leftHand = new FCircle(w/6);
   leftHand.setPosition(x - w, y + 19.0/12*w);
-  FCircle rightHand = new FCircle(w/6);
+  rightHand = new FCircle(w/6);
   rightHand.setPosition(x + w, y + 19.0/12*w);
 
-  FBox leftArm = new FBox(w/2*pow(2, 0.5), 15);
+  leftArm = new FBox(w/2*pow(2, 0.5), 15);
   leftArm.setPosition(x - w*3/4.0, y + 4.0/3*w);
   leftArm.setRotation(-PI/4);
-  FBox rightArm = new FBox(w/2*pow(2, 0.5), 15);
+  
+  rightArm = new FBox(w/2*pow(2, 0.5), 15);
   rightArm.setPosition(x + w*3/4.0, y + 4.0/3*w);
   rightArm.setRotation(PI/4);
 
-  FBox leftThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, 15);
+  leftThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, 15);
   leftThigh.setPosition(x - (pow(2, 0.5)/4+1.0/6)*w, y + (20-3*pow(2, 0.5))/24*w);
   leftThigh.setRotation(atan((6-3*pow(2, 0.5))/4));
-  FBox rightThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, 15);
+  rightThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, 15);
   rightThigh.setPosition(x + (pow(2, 0.5)/4+1.0/6)*w, y + (20-3*pow(2, 0.5))/24*w);
   rightThigh.setRotation(-atan((6-3*pow(2, 0.5))/4));
 
-  FBox leftLeg = new FBox(pow(5, 0.5)/4*w, 15);
+  leftLeg = new FBox(pow(5, 0.5)/4*w, 15);
   leftLeg.setPosition(x - (11.0/24+pow(2, 0.5)/4)*w, y + w/3);
   leftLeg.setRotation(atan(2));
-  FBox rightLeg = new FBox(pow(5, 0.5)/4*w, 15);
+  rightLeg = new FBox(pow(5, 0.5)/4*w, 15);
   rightLeg.setPosition(x + (11.0/24+pow(2, 0.5)/4)*w, y + w/3);
   rightLeg.setRotation(-atan(2));
 
-  FCircle leftFoot = new FCircle(w/6);
+  leftFoot = new FCircle(w/6);
   leftFoot.setPosition(x - (pow(2, 0.5)/4 + 7.0/12)*w, y + w/12);
-  FCircle rightFoot = new FCircle(w/6);
+  rightFoot = new FCircle(w/6);
   rightFoot.setPosition(x + (pow(2, 0.5)/4 + 7.0/12)*w, y + w/12);
 
   world.add(leftEye);
@@ -85,35 +119,71 @@ void createPlayer(float x, float y, float w) {
   world.add(rightFoot);
   world.add(body);
 
-  FRevoluteJoint leftBodyEyeJoint = new FRevoluteJoint(body, leftEye, x-w/4, y+(13.0/12+pow(3, 0.5)/4)*w);
+  leftBodyEyeJoint = new FRevoluteJoint(body, leftEye, x-w/4, y+(13.0/12+pow(3, 0.5)/4)*w);
   leftBodyEyeJoint.setDrawable(false);
-  FRevoluteJoint rightBodyEyeJoint = new FRevoluteJoint(body, rightEye, x+w/4, y+(13.0/12+pow(3, 0.5)/4)*w);
+  leftBodyEyeJoint.setEnableLimit(true);
+  leftBodyEyeJoint.setLowerAngle(0);
+  leftBodyEyeJoint.setUpperAngle(0);
+  rightBodyEyeJoint = new FRevoluteJoint(body, rightEye, x+w/4, y+(13.0/12+pow(3, 0.5)/4)*w);
   rightBodyEyeJoint.setDrawable(false);
+  rightBodyEyeJoint.setEnableLimit(true);
+  rightBodyEyeJoint.setLowerAngle(0);
+  rightBodyEyeJoint.setUpperAngle(0);
 
-  FRevoluteJoint leftBodyArmJoint = new FRevoluteJoint(body, leftArm, x-w/2, y+13.0/12*w);
+  leftBodyArmJoint = new FRevoluteJoint(body, leftArm, x-w/2, y+13.0/12*w);
   leftBodyArmJoint.setDrawable(false);
-  FRevoluteJoint rightBodyArmJoint = new FRevoluteJoint(body, rightArm, x+w/2, y+13.0/12*w);
+  leftBodyArmJoint.setEnableLimit(true);
+  leftBodyArmJoint.setLowerAngle(-PI/6);
+  leftBodyArmJoint.setUpperAngle(PI/6);
+  rightBodyArmJoint = new FRevoluteJoint(body, rightArm, x+w/2, y+13.0/12*w);
   rightBodyArmJoint.setDrawable(false);
+  rightBodyArmJoint.setEnableLimit(true);
+  rightBodyArmJoint.setLowerAngle(-PI/6);
+  rightBodyArmJoint.setUpperAngle(PI/6);
 
-  FRevoluteJoint leftBodyThighJoint = new FRevoluteJoint(body, leftThigh, x-pow(2, 0.5)/4*w, y+(13.0/12-pow(2, 0.5)/4)*w);
+  leftBodyThighJoint = new FRevoluteJoint(body, leftThigh, x-pow(2, 0.5)/4*w, y+(13.0/12-pow(2, 0.5)/4)*w);
   leftBodyThighJoint.setDrawable(false);
-  FRevoluteJoint rightBodyThighJoint = new FRevoluteJoint(body, rightThigh, x+pow(2, 0.5)/4*w, y+(13.0/12-pow(2, 0.5)/4)*w);
+  leftBodyThighJoint.setEnableLimit(true);
+  leftBodyThighJoint.setLowerAngle(-PI/16);
+  leftBodyThighJoint.setUpperAngle(PI/8);
+  rightBodyThighJoint = new FRevoluteJoint(body, rightThigh, x+pow(2, 0.5)/4*w, y+(13.0/12-pow(2, 0.5)/4)*w);
   rightBodyThighJoint.setDrawable(false);
+  rightBodyThighJoint.setEnableLimit(true);
+  rightBodyThighJoint.setLowerAngle(-PI/8);
+  rightBodyThighJoint.setUpperAngle(PI/16);
 
-  FRevoluteJoint leftHandArmJoint = new FRevoluteJoint(leftHand, leftArm, x-w, y+19.0/12*w);
+  leftHandArmJoint = new FRevoluteJoint(leftHand, leftArm, x-w, y+19.0/12*w);
   leftHandArmJoint.setDrawable(false);
-  FRevoluteJoint rightHandArmJoint = new FRevoluteJoint(rightHand, rightArm, x+w, y+19.0/12*w);
+  leftHandArmJoint.setEnableLimit(true);
+  leftHandArmJoint.setLowerAngle(0);
+  leftHandArmJoint.setUpperAngle(0);
+  rightHandArmJoint = new FRevoluteJoint(rightHand, rightArm, x+w, y+19.0/12*w);
   rightHandArmJoint.setDrawable(false);
+  rightHandArmJoint.setEnableLimit(true);
+  rightHandArmJoint.setLowerAngle(0);
+  rightHandArmJoint.setUpperAngle(0);
 
-  FRevoluteJoint leftThighLegJoint = new FRevoluteJoint(leftThigh, leftLeg, x-(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
+  leftThighLegJoint = new FRevoluteJoint(leftThigh, leftLeg, x-(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
   leftThighLegJoint.setDrawable(false);
-  FRevoluteJoint rightThighLegJoint = new FRevoluteJoint(rightThigh, rightLeg, x+(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
+  leftThighLegJoint.setEnableLimit(true);
+  leftThighLegJoint.setLowerAngle(-PI/16);
+  leftThighLegJoint.setUpperAngle(PI/4);
+  rightThighLegJoint = new FRevoluteJoint(rightThigh, rightLeg, x+(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
   rightThighLegJoint.setDrawable(false);
+  rightThighLegJoint.setEnableLimit(true);
+  rightThighLegJoint.setLowerAngle(-PI/4);
+  rightThighLegJoint.setUpperAngle(PI/16);
 
-  FRevoluteJoint leftLegFootJoint = new FRevoluteJoint(leftLeg, leftFoot, x-(pow(2, 0.5)/4+7.0/12)*w, y+w/12);
+  leftLegFootJoint = new FRevoluteJoint(leftLeg, leftFoot, x-(pow(2, 0.5)/4+7.0/12)*w, y+w/12);
   leftLegFootJoint.setDrawable(false);
-  FRevoluteJoint rightLegFootJoint = new FRevoluteJoint(rightLeg, rightFoot, x+(pow(2, 0.5)/4+7.0/12)*w, y+w/12);
+  leftLegFootJoint.setEnableLimit(true);
+  leftLegFootJoint.setLowerAngle(0);
+  leftLegFootJoint.setUpperAngle(0);
+  rightLegFootJoint = new FRevoluteJoint(rightLeg, rightFoot, x+(pow(2, 0.5)/4+7.0/12)*w, y+w/12);
   rightLegFootJoint.setDrawable(false);
+  rightLegFootJoint.setEnableLimit(true);
+  rightLegFootJoint.setLowerAngle(0);
+  rightLegFootJoint.setUpperAngle(0);
 
   world.add(leftBodyEyeJoint);
   world.add(rightBodyEyeJoint);
