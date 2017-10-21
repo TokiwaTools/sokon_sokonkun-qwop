@@ -13,20 +13,20 @@ FCircle body, leftEye, rightEye, leftHand, rightHand, leftFoot, rightFoot;
 FBox leftArm, rightArm, leftThigh, rightThigh, leftLeg, rightLeg;
 FRevoluteJoint leftBodyEyeJoint, rightBodyEyeJoint, leftBodyArmJoint, rightBodyArmJoint, leftBodyThighJoint, rightBodyThighJoint, leftHandArmJoint, rightHandArmJoint, leftThighLegJoint, rightThighLegJoint, leftLegFootJoint, rightLegFootJoint;
 GifMaker gifMaker;
-float characterWidth = 200;
-float moveDistance = characterWidth*10000;
+float characterWidth = 50;
+float moveDistance = characterWidth*50;
 
 void setup() {
-  size(1280, 720);
+  fullScreen();
   smooth();
 
   Fisica.init(this);
 
   world = new FWorld();
   world.setEdges(-width/2, height, width/2, 80);
-  world.setGravity(0, -200);
+  world.setGravity(0, 0);
 
-  createPlayer(0, 300, characterWidth);
+  createPlayer(0, height/2, characterWidth);
 /*
   gifMaker = new GifMaker(this, "ss.gif");
   gifMaker.setRepeat(0);
@@ -39,6 +39,7 @@ void draw() {
   translate(width/2, height);
   scale(1, -1);
 
+ // world.setGravity(300*cos(PI*frameCount/60), 300*sin(PI*frameCount/60));
   world.step();
   world.draw();
 //  gifMaker.addFrame();
@@ -53,25 +54,54 @@ void keyPressed() {
   float w = characterWidth;
   float d = moveDistance;
 
+//      leftThigh.setForce(leftThigh.getX()+d/pow(2, 0.5), leftThigh.getY()-d/pow(2, 0.5));
+//      rightThigh.setForce(rightThigh.getX()-d/pow(2, 0.5), rightThigh.getY()-d/pow(2, 0.5));
+//      leftThigh.setForce(leftThigh.getX()-d/pow(2, 0.5), leftThigh.getY()+d/pow(2, 0.5));
+//      rightThigh.setForce(rightThigh.getX()+d/pow(2, 0.5), rightThigh.getY()+d/pow(2, 0.5));
+
+  if (!(key == 'q' || key == 'z' || key == 'o' || key == 'm')) return;
+  
+  leftHand.setStatic(false);
+  leftFoot.setStatic(false);
+  rightHand.setStatic(false);
+  rightFoot.setStatic(false);
+
+  float theta;
   switch (key) {
     case 'q':
-      leftThigh.setForce(leftThigh.getX()+d/pow(2, 0.5), leftThigh.getY()-d/pow(2, 0.5));
-      rightThigh.setForce(rightThigh.getX()-d/pow(2, 0.5), rightThigh.getY()-d/pow(2, 0.5));
+      body.setForce(-w*d, w*d);
     break;
-    case 'w':
-      leftThigh.setForce(leftThigh.getX()-d/pow(2, 0.5), leftThigh.getY()+d/pow(2, 0.5));
-      rightThigh.setForce(rightThigh.getX()+d/pow(2, 0.5), rightThigh.getY()+d/pow(2, 0.5));
+    case 'z':
+      body.setForce(-w*d, -w*d);
     break;
     case 'o':
+      body.setForce(w*d, w*d);
     break;
-    case 'p':
+    case 'm':
+      body.setForce(w*d, -w*d);
     break;
   }
 }
 
 void keyReleased() {
-  leftThigh.resetForces();
-  rightThigh.resetForces();
+  switch (key) {
+    case 'q':
+      leftHand.resetForces();
+      leftHand.setStatic(true);
+    break;
+    case 'z':
+      leftFoot.resetForces();
+      leftFoot.setStatic(true);
+    break;
+    case 'o':
+      rightHand.resetForces();
+      rightHand.setStatic(true);
+    break;
+    case 'm':
+      rightFoot.resetForces();
+      rightFoot.setStatic(true);
+    break;
+  }
 }
 
 //x, y: 地上に接する点 足と足の間
@@ -82,38 +112,41 @@ void createPlayer(float x, float y, float w) {
 
   leftEye = new FCircle(w/4);
   leftEye.setPosition(x - w*5/16.0, y + (13.0/12+5/16.0*pow(3, 0.5))*w);
+  leftEye.setRotatable(false);
   rightEye = new FCircle(w/4);
   rightEye.setPosition(x + w*5/16.0, y + (13.0/12+5/16.0*pow(3, 0.5))*w);
+  rightEye.setRotatable(false);
 
   leftHand = new FCircle(w/6);
   leftHand.setPosition(x - w, y + 19.0/12*w);
   rightHand = new FCircle(w/6);
   rightHand.setPosition(x + w, y + 19.0/12*w);
 
-  leftArm = new FBox(w/2*pow(2, 0.5), 15);
+  leftArm = new FBox(w/2*pow(2, 0.5), w/12);
   leftArm.setPosition(x - w*3/4.0, y + 4.0/3*w);
   leftArm.setRotation(-PI/4);
   
-  rightArm = new FBox(w/2*pow(2, 0.5), 15);
+  rightArm = new FBox(w/2*pow(2, 0.5), w/12);
   rightArm.setPosition(x + w*3/4.0, y + 4.0/3*w);
   rightArm.setRotation(PI/4);
 
-  leftThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, 15);
+  leftThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, w/12);
   leftThigh.setPosition(x - (pow(2, 0.5)/4+1.0/6)*w, y + (20-3*pow(2, 0.5))/24*w);
   leftThigh.setRotation(atan((6-3*pow(2, 0.5))/4));
-  rightThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, 15);
+  rightThigh = new FBox(pow(1.0/9+(6-4*pow(2, 0.5))/16, 0.5)*w, w/12);
   rightThigh.setPosition(x + (pow(2, 0.5)/4+1.0/6)*w, y + (20-3*pow(2, 0.5))/24*w);
   rightThigh.setRotation(-atan((6-3*pow(2, 0.5))/4));
 
-  leftLeg = new FBox(pow(5, 0.5)/4*w, 15);
+  leftLeg = new FBox(pow(5, 0.5)/4*w, w/12);
   leftLeg.setPosition(x - (11.0/24+pow(2, 0.5)/4)*w, y + w/3);
   leftLeg.setRotation(atan(2));
-  rightLeg = new FBox(pow(5, 0.5)/4*w, 15);
+  rightLeg = new FBox(pow(5, 0.5)/4*w, w/12);
   rightLeg.setPosition(x + (11.0/24+pow(2, 0.5)/4)*w, y + w/3);
   rightLeg.setRotation(-atan(2));
 
   leftFoot = new FCircle(w/6);
   leftFoot.setPosition(x - (pow(2, 0.5)/4 + 7.0/12)*w, y + w/12);
+  leftFoot.setStatic(true);
   rightFoot = new FCircle(w/6);
   rightFoot.setPosition(x + (pow(2, 0.5)/4 + 7.0/12)*w, y + w/12);
 
@@ -134,61 +167,58 @@ void createPlayer(float x, float y, float w) {
   leftBodyEyeJoint = new FRevoluteJoint(body, leftEye, x-w/4, y+(13.0/12+pow(3, 0.5)/4)*w);
   leftBodyEyeJoint.setDrawable(false);
   leftBodyEyeJoint.setEnableLimit(true);
-  leftBodyEyeJoint.setLowerAngle(-PI/6);
-  leftBodyEyeJoint.setUpperAngle(PI/6);
+  leftBodyEyeJoint.setLowerAngle(0);
+  leftBodyEyeJoint.setUpperAngle(0);
   rightBodyEyeJoint = new FRevoluteJoint(body, rightEye, x+w/4, y+(13.0/12+pow(3, 0.5)/4)*w);
   rightBodyEyeJoint.setDrawable(false);
   rightBodyEyeJoint.setEnableLimit(true);
-  rightBodyEyeJoint.setLowerAngle(-PI/6);
-  rightBodyEyeJoint.setUpperAngle(PI/6);
+  rightBodyEyeJoint.setLowerAngle(0);
+  rightBodyEyeJoint.setUpperAngle(0);
 
   leftBodyArmJoint = new FRevoluteJoint(body, leftArm, x-w/2, y+13.0/12*w);
   leftBodyArmJoint.setDrawable(false);
   leftBodyArmJoint.setEnableLimit(true);
-  leftBodyArmJoint.setLowerAngle(-PI/6);
-  leftBodyArmJoint.setUpperAngle(PI/6);
+  leftBodyArmJoint.setLowerAngle(0);
+  leftBodyArmJoint.setUpperAngle(0);
   rightBodyArmJoint = new FRevoluteJoint(body, rightArm, x+w/2, y+13.0/12*w);
   rightBodyArmJoint.setDrawable(false);
   rightBodyArmJoint.setEnableLimit(true);
-  rightBodyArmJoint.setLowerAngle(-PI/6);
-  rightBodyArmJoint.setUpperAngle(PI/6);
+  rightBodyArmJoint.setLowerAngle(0);
+  rightBodyArmJoint.setUpperAngle(0);
 
   leftBodyThighJoint = new FRevoluteJoint(body, leftThigh, x-pow(2, 0.5)/4*w, y+(13.0/12-pow(2, 0.5)/4)*w);
   leftBodyThighJoint.setDrawable(false);
   leftBodyThighJoint.setEnableLimit(true);
-  leftBodyThighJoint.setLowerAngle(-PI/5);
-  leftBodyThighJoint.setUpperAngle(PI/3);
-  leftBodyThighJoint.setEnableMotor(true);
-  leftBodyThighJoint.setMotorSpeed(100);
+  leftBodyThighJoint.setLowerAngle(0);
+  leftBodyThighJoint.setUpperAngle(0);
   rightBodyThighJoint = new FRevoluteJoint(body, rightThigh, x+pow(2, 0.5)/4*w, y+(13.0/12-pow(2, 0.5)/4)*w);
   rightBodyThighJoint.setDrawable(false);
   rightBodyThighJoint.setEnableLimit(true);
-  rightBodyThighJoint.setLowerAngle(-PI/5);
-  rightBodyThighJoint.setUpperAngle(PI/3);
-  rightBodyThighJoint.setEnableMotor(true);
-  rightBodyThighJoint.setMotorSpeed(100);
+  rightBodyThighJoint.setLowerAngle(0);
+  rightBodyThighJoint.setUpperAngle(0);
 
   leftHandArmJoint = new FRevoluteJoint(leftHand, leftArm, x-w, y+19.0/12*w);
   leftHandArmJoint.setDrawable(false);
   leftHandArmJoint.setEnableLimit(true);
-  leftHandArmJoint.setLowerAngle(0);
-  leftHandArmJoint.setUpperAngle(0);
+  leftHandArmJoint.setLowerAngle(-PI/3);
+  leftHandArmJoint.setUpperAngle(PI/3);
   rightHandArmJoint = new FRevoluteJoint(rightHand, rightArm, x+w, y+19.0/12*w);
   rightHandArmJoint.setDrawable(false);
   rightHandArmJoint.setEnableLimit(true);
-  rightHandArmJoint.setLowerAngle(0);
-  rightHandArmJoint.setUpperAngle(0);
+  rightHandArmJoint.setLowerAngle(-PI/3);
+  rightHandArmJoint.setUpperAngle(PI/3);
 
   leftThighLegJoint = new FRevoluteJoint(leftThigh, leftLeg, x-(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
   leftThighLegJoint.setDrawable(false);
   leftThighLegJoint.setEnableLimit(true);
-  leftThighLegJoint.setLowerAngle(0);
-  leftThighLegJoint.setUpperAngle(0);
+  leftThighLegJoint.setLowerAngle(-PI/3);
+  leftThighLegJoint.setUpperAngle(PI/3);
+  
   rightThighLegJoint = new FRevoluteJoint(rightThigh, rightLeg, x+(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
   rightThighLegJoint.setDrawable(false);
   rightThighLegJoint.setEnableLimit(true);
-  rightThighLegJoint.setLowerAngle(0);
-  rightThighLegJoint.setUpperAngle(0);
+  rightThighLegJoint.setLowerAngle(-PI/3);
+  rightThighLegJoint.setUpperAngle(PI/3);
 
   leftLegFootJoint = new FRevoluteJoint(leftLeg, leftFoot, x-(pow(2, 0.5)/4+7.0/12)*w, y+w/12);
   leftLegFootJoint.setDrawable(false);
