@@ -1,8 +1,8 @@
 /*
-Q：左太ももを後ろへ、右太ももを前へ (股を閉じる)
-W：右太ももを後ろへ、左太ももを前へ (股を開く)
-O：左ひざを曲げる
-P：右ひざを曲げる
+Q: 左上に移動 放すと左手を固定
+O: 右上に移動 放すと右手を固定
+Z: 左下に移動 放すと左足を固定 
+M: 右下に移動 放すと右足を固定
 */
 
 import fisica.*;
@@ -213,7 +213,7 @@ void createPlayer(float x, float y, float w) {
   leftThighLegJoint.setEnableLimit(true);
   leftThighLegJoint.setLowerAngle(-PI/3);
   leftThighLegJoint.setUpperAngle(PI/3);
-  
+
   rightThighLegJoint = new FRevoluteJoint(rightThigh, rightLeg, x+(pow(2, 0.5)/4+1.0/3)*w, y+7.0/12*w);
   rightThighLegJoint.setDrawable(false);
   rightThighLegJoint.setEnableLimit(true);
