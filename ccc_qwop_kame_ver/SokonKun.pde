@@ -18,6 +18,7 @@ class SokonKun {
 		bodyWidth = _w;
 		bodyColor = _c;
 		createShape(_x, _y, _w, _c);
+		body.setRotation(PI/70);
 	}
 
 	public float getX() {
@@ -149,7 +150,7 @@ class SokonKun {
 
 		//手
 		float handW = w/6.0;
-		float armW = w/sqrt(2);
+		float armW = w/sqrt(2)*1.1;
 
 		float leftHandX = x-w/2.0 + ( armW*cos(PI*5/4.0) );
 		float leftHandY = y + armW*sin(PI*5/4.0);

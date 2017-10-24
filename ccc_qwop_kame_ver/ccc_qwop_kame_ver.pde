@@ -97,7 +97,7 @@ void contactStarted(FContact c) {
 }
 
 void drawGround() {
-	for (int i = 0; i <= WORLD_WIDTH/groundImage.width; i++) {
+	for (int i = -1; i <= WORLD_WIDTH/groundImage.width+1; i++) {
 		image(groundImage, WORLD_LEFT_EDGE + i*groundImage.width, height-GROUND_HEIGHT);
 	}
 }
