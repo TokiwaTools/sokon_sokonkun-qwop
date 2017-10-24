@@ -14,6 +14,7 @@ final float PLAYER_SIZE = 100;		//プレイヤーのサイズ
 final float WORLD_LEFT_EDGE = -PLAYER_SIZE*8;				//ワールドの左端X座標
 final float WORLD_RIGHT_EDGE= WORLD_WIDTH-PLAYER_SIZE*8;	//ワールドの右端X座標
 final float GROUND_HEIGHT = 100;	//地面の高さ
+final float HUNDRED_METER = 1000;	//100mの幅(pixels)
 
 FWorld world;
 
@@ -50,9 +51,9 @@ void draw() {
 	pushMatrix();
 		translate(width/2-sokonKun.getX(), 0);
 		drawGround();
-
 		world.step();
 		world.draw();
+		drawSignBoard();
 	popMatrix();
 
 	if (isGameOver) {
@@ -101,9 +102,22 @@ void drawGround() {
 	}
 }
 
+void drawSignBoard() {
+	int meter = 100;
+	for (float x = width/2+HUNDRED_METER; x <= WORLD_RIGHT_EDGE; x += HUNDRED_METER) {
+		fill(255);
+		textSize(26);
+		textAlign(CENTER, CENTER);
+		text(meter + "m", x, height-GROUND_HEIGHT*0.7);
+	}
+}
+
 void drawGameOver() {
 	fill(#EA8700);
 	textSize(40);
 	textAlign(CENTER, CENTER);
-	text("GAME OVER", width/2, height/2);
+	text("GAME OVER", width/2, height*0.4);
+	float meter = (sokonKun.getX()-width/2)/HUNDRED_METER*100;
+	textSize(30);
+	text(String.format("%.2f", meter) + "m", width/2, height*0.5);
 }
