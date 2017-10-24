@@ -34,7 +34,7 @@ void setup() {
 */
 }
 
-void draw() {
+void draw() { 
   background(255);
   translate(width/2, height);
   scale(1, -1);
@@ -125,7 +125,6 @@ void createPlayer(float x, float y, float w) {
   leftArm = new FBox(w/2*pow(2, 0.5), w/12);
   leftArm.setPosition(x - w*3/4.0, y + 4.0/3*w);
   leftArm.setRotation(-PI/4);
-  
   rightArm = new FBox(w/2*pow(2, 0.5), w/12);
   rightArm.setPosition(x + w*3/4.0, y + 4.0/3*w);
   rightArm.setRotation(PI/4);
