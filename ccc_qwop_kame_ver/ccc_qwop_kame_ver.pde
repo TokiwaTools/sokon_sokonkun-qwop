@@ -1,25 +1,26 @@
 import fisica.*;
 import java.util.List;
 
-final float WORLD_WIDTH = 1280*10;	//ワールド横幅
-final float PLAYER_SIZE = 100;		//プレイヤーのサイズ
+final float WORLD_WIDTH = 1280*5;	//ワールド横幅
+final float PLAYER_SIZE = 150;		//プレイヤーのサイズ
 final float WORLD_LEFT_EDGE = -PLAYER_SIZE*8;				//ワールドの左端X座標
 final float WORLD_RIGHT_EDGE= WORLD_WIDTH-PLAYER_SIZE*8;	//ワールドの右端X座標
 final float GROUND_HEIGHT = 100;	//地面の高さ
-final float HUNDRED_METER = 1000;	//100mの幅(pixels)
+final float METER = 10;	//100mの幅(pixels)
 
 FWorld world;
 
 SokonKun sokonKun;
 FBox ground;
 PImage groundImage;
+Obstacles obstacles;
 
 boolean isGameOver = false;
+boolean cheatMode = false;
 
 void setup() {
 	size(1280, 720);
-	frameRate(60);
-
+	
 	Fisica.init(this);
 	world = new FWorld(WORLD_LEFT_EDGE, -height/2, WORLD_RIGHT_EDGE, height);
 	world.setEdges(WORLD_LEFT_EDGE, -height/2, WORLD_RIGHT_EDGE, height, color(0, 0, 0, 0));
@@ -34,7 +35,9 @@ void setup() {
 	groundImage = groundImage.get(0, (int)(groundImage.height/2-GROUND_HEIGHT/2), groundImage.width, (int)(groundImage.height/2+GROUND_HEIGHT/2));
 //  world.setGravity(0, 30);
 
-	sokonKun = new SokonKun(width/2, -13.0/12*PLAYER_SIZE, PLAYER_SIZE, #5FC3FF);
+	sokonKun = new SokonKun(width/2, -13.0/12*PLAYER_SIZE, #5FC3FF);
+
+	obstacles = new Obstacles(width/2, height-GROUND_HEIGHT);
 }
 
 void draw() {
@@ -51,25 +54,29 @@ void draw() {
 	if (isGameOver) {
 		drawGameOver();
 	}
+	//println(frameRate);
 }
 
 void keyPressed() {
 	if (isGameOver) return;
+	if (key == ' ') {
+		cheatMode = !cheatMode;
+		println("Cheat Mode: " + cheatMode);
+	}
+	if ( abs(sokonKun.getVelocityY()) > 30.0 ) return;
 
-	switch(key) {
-		case 'q':
-			sokonKun.openKnees();
-		break;
-		case 'w':
-	  		sokonKun.closeKnees();
-			break;
-		case 'o':
-	  		sokonKun.closeFeet();
-		break;
-		case 'p':
-	  		sokonKun.openFeet();
-		break;
-  }
+	if (key == 'q') {
+		sokonKun.openKnees();
+	}
+	if (key == 'w') {
+		sokonKun.closeKnees();
+	}
+	if (key == 'o') {
+		sokonKun.closeFeet();
+	}
+	if (key == 'p') {
+		sokonKun.openFeet();
+	}
 }
 
 void contactStarted(FContact c) {
@@ -84,6 +91,8 @@ void contactStarted(FContact c) {
   
 	if (sokonKun.isGameOver(body)) {
 		body.setFill(230, 0, 0);
+
+		if (cheatMode) return;
 		isGameOver = true;
 	}
 }
@@ -95,12 +104,13 @@ void drawGround() {
 }
 
 void drawSignBoard() {
-	int meter = 100;
-	for (float x = width/2+HUNDRED_METER; x <= WORLD_RIGHT_EDGE; x += HUNDRED_METER) {
+	int meter = 50;
+	for (float x = width/2+METER*50; x <= WORLD_RIGHT_EDGE; x += METER*50) {
 		fill(255);
 		textSize(26);
 		textAlign(CENTER, CENTER);
 		text(meter + "m", x, height-GROUND_HEIGHT*0.7);
+		meter += 50;
 	}
 }
 
@@ -109,7 +119,7 @@ void drawGameOver() {
 	textSize(40);
 	textAlign(CENTER, CENTER);
 	text("GAME OVER", width/2, height*0.4);
-	float meter = (sokonKun.getX()-width/2)/HUNDRED_METER*100;
+	float meter = (sokonKun.getX()-width/2)/METER;
 	textSize(30);
 	text(String.format("%.2f", meter) + "m", width/2, height*0.5);
 }

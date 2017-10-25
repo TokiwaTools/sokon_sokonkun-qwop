@@ -1,6 +1,10 @@
+//プレイヤー
 class SokonKun {
-	float bodyWidth;
+	float bodyWidth = PLAYER_SIZE;
 	color bodyColor;
+
+	final float LEGS_STRENGTH = sq(bodyWidth)*0.6;
+	final float FOOT_STRENGTH = sq(bodyWidth)*0.3;
 
 	FCircle 
 		body, 
@@ -14,10 +18,9 @@ class SokonKun {
 	FDistanceJoint
 		leftKnee_leftFoot_dist, rightKnee_rightFoot_dist;
 	
-	public SokonKun(float _x, float _y, float _w, color _c) {
-		bodyWidth = _w;
+	public SokonKun(float _x, float _y, color _c) {
 		bodyColor = _c;
-		createShape(_x, _y, _w, _c);
+		createShape(_x, _y, bodyWidth, _c);
 		body.setRotation(PI/70);
 	}
 
@@ -29,8 +32,12 @@ class SokonKun {
 		return body.getY();
 	}
 
-	public float getBodyWidth() {
-		return bodyWidth;
+	public float getVelocityX() {
+		return body.getVelocityX();
+	}
+
+	public float getVelocityY() {
+		return body.getVelocityY();
 	}
 
 	public color getBodyColor() {
@@ -38,58 +45,66 @@ class SokonKun {
 	}
 
 	public void closeKnees() {
+		float strength = LEGS_STRENGTH;
+
 		float leftKneeTheta = atan2(leftKnee.getY()-body_leftKnee_revo.getAnchorY(), leftKnee.getX()-body_leftKnee_revo.getAnchorX());
 		leftKnee.addForce(
-			sq(bodyWidth)*0.4*cos(leftKneeTheta-PI/2), 
-			sq(bodyWidth)*0.4*sin(leftKneeTheta-PI/2)
+			strength*cos(leftKneeTheta-PI/2), 
+			strength*sin(leftKneeTheta-PI/2)
 		);
 
 		float rightKneeTheta = atan2(rightKnee.getY()-body_rightKnee_revo.getAnchorY(), rightKnee.getX()-body_rightKnee_revo.getAnchorX());
 		rightKnee.addForce(
-			-sq(bodyWidth)*0.4*cos(rightKneeTheta-PI/2), 
-			-sq(bodyWidth)*0.4*sin(rightKneeTheta-PI/2)
+			-strength*cos(rightKneeTheta-PI/2), 
+			-strength*sin(rightKneeTheta-PI/2)
 		);
 	}
 
 	public void openKnees() {
+		float strength = LEGS_STRENGTH;
+
 		float leftKneeTheta = atan2(leftKnee.getY()-body_leftKnee_revo.getAnchorY(), leftKnee.getX()-body_leftKnee_revo.getAnchorX());
 		leftKnee.addForce(
-			-sq(bodyWidth)*0.75*cos(leftKneeTheta-PI/2), 
-			-sq(bodyWidth)*0.75*sin(leftKneeTheta-PI/2)
+			-strength*cos(leftKneeTheta-PI/2), 
+			-strength*sin(leftKneeTheta-PI/2)
 		);
 
 		float rightKneeTheta = atan2(rightKnee.getY()-body_rightKnee_revo.getAnchorY(), rightKnee.getX()-body_rightKnee_revo.getAnchorX());
 		rightKnee.addForce(
-			sq(bodyWidth)*0.75*cos(rightKneeTheta-PI/2), 
-			sq(bodyWidth)*0.75*sin(rightKneeTheta-PI/2)
+			sq(bodyWidth)*0.55*cos(rightKneeTheta-PI/2), 
+			sq(bodyWidth)*0.55*sin(rightKneeTheta-PI/2)
 		);
 	}
 
 	public void closeFeet() {
+		float strength = FOOT_STRENGTH;
+
 		float leftFootTheta = atan2(leftFoot.getY()-leftKnee.getY(), leftFoot.getX()-leftKnee.getX());
 		leftFoot.addForce(
-			sq(bodyWidth)*0.4*cos(leftFootTheta-PI/2), 
-			sq(bodyWidth)*0.4*sin(leftFootTheta-PI/2)
+			strength*cos(leftFootTheta-PI/2), 
+			strength*sin(leftFootTheta-PI/2)
 		);
 
 		float rightFootTheta = atan2(rightFoot.getY()-rightKnee.getY(), rightFoot.getX()-rightKnee.getX() );
 		rightFoot.addForce(
-			-sq(bodyWidth)*0.4*cos(rightFootTheta-PI/2),
-			-sq(bodyWidth)*0.4*sin(rightFootTheta-PI/2)
+			-strength*cos(rightFootTheta-PI/2),
+			-strength*sin(rightFootTheta-PI/2)
 		);
 	}
 
 	public void openFeet() {
+		float strength = FOOT_STRENGTH;
+
 		float leftFootTheta = atan2(leftFoot.getY()-leftKnee.getY(), leftFoot.getX()-leftKnee.getX());
 		leftFoot.addForce(
-			-sq(bodyWidth)*0.75*cos(leftFootTheta-PI/2), 
-			-sq(bodyWidth)*0.75*sin(leftFootTheta-PI/2)
+			-strength*cos(leftFootTheta-PI/2), 
+			-strength*sin(leftFootTheta-PI/2)
 		);
 
 		float rightFootTheta = atan2(rightFoot.getY()-rightKnee.getY(), rightFoot.getX()-rightKnee.getX() );
 		rightFoot.addForce(
-			sq(bodyWidth)*0.75*cos(rightFootTheta-PI/2),
-			sq(bodyWidth)*0.75*sin(rightFootTheta-PI/2)
+			strength*cos(rightFootTheta-PI/2),
+			strength*sin(rightFootTheta-PI/2)
 		);
 	}
 
@@ -150,7 +165,7 @@ class SokonKun {
 
 		//手
 		float handW = w/6.0;
-		float armW = w/sqrt(2)*1.1;
+		float armW = w/sqrt(2);
 
 		float leftHandX = x-w/2.0 + ( armW*cos(PI*5/4.0) );
 		float leftHandY = y + armW*sin(PI*5/4.0);
