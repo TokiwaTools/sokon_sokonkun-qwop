@@ -6,7 +6,7 @@ final float PLAYER_SIZE = 150;		//プレイヤーのサイズ
 final float WORLD_LEFT_EDGE = -PLAYER_SIZE*8;				//ワールドの左端X座標
 final float WORLD_RIGHT_EDGE= WORLD_WIDTH-PLAYER_SIZE*8;	//ワールドの右端X座標
 final float GROUND_HEIGHT = 100;	//地面の高さ
-final float METER = 10;	//100mの幅(pixels)
+final float METER = 10;	//1mの幅(pixels)
 
 FWorld world;
 
@@ -15,8 +15,8 @@ FBox ground;
 PImage groundImage;
 Obstacles obstacles;
 
-boolean isGameOver = false;
-boolean cheatMode = false;
+boolean isGameOver;
+boolean cheatMode;
 
 void setup() {
 	size(1280, 720);
@@ -35,9 +35,22 @@ void setup() {
 	groundImage = groundImage.get(0, (int)(groundImage.height/2-GROUND_HEIGHT/2), groundImage.width, (int)(groundImage.height/2+GROUND_HEIGHT/2));
 //  world.setGravity(0, 30);
 
-	sokonKun = new SokonKun(width/2, -13.0/12*PLAYER_SIZE, #5FC3FF);
+	sokonKun = new SokonKun(width/2, -13.0/12*PLAYER_SIZE, #000000);
+	
+	PImage bodyImg = loadImage("body.png");
+	float characterScale = PLAYER_SIZE/bodyImg.height;
+	sokonKun.attachImages(
+		loadTexture("body.png", characterScale),
+		loadTexture("left_eye.png", characterScale), loadTexture("right_eye.png", characterScale),
+		loadTexture("left_hand.png", characterScale), loadTexture("right_hand.png", characterScale),
+		loadTexture("left_hand.png", characterScale), loadTexture("right_hand.png", characterScale),
+		loadTexture("left_foot.png", characterScale), loadTexture("right_foot.png", characterScale)
+	);
 
 	obstacles = new Obstacles(width/2, height-GROUND_HEIGHT);
+
+	isGameOver = false;
+	cheatMode = false;
 }
 
 void draw() {
@@ -58,7 +71,12 @@ void draw() {
 }
 
 void keyPressed() {
+	if (keyCode == BACKSPACE) {
+		setup();
+	}
+
 	if (isGameOver) return;
+	
 	if (key == ' ') {
 		cheatMode = !cheatMode;
 		println("Cheat Mode: " + cheatMode);
@@ -122,4 +140,10 @@ void drawGameOver() {
 	float meter = (sokonKun.getX()-width/2)/METER;
 	textSize(30);
 	text(String.format("%.2f", meter) + "m", width/2, height*0.5);
+}
+
+PImage loadTexture(String path, float scale) {
+	PImage texture = loadImage(path);
+	texture.resize((int)(texture.width*scale), (int)(texture.height*scale));
+	return texture;
 }

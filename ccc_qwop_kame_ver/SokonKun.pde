@@ -108,8 +108,20 @@ class SokonKun {
 		);
 	}
 
-	boolean isGameOver(FBody body) {
+	public boolean isGameOver(FBody body) {
 		return (body == leftHand || body == rightHand);
+	}
+
+	public void attachImages(PImage bodyImg, PImage leftEyeImg, PImage rightEyeImg, PImage leftHandImg, PImage rightHandImg, PImage leftKneeImg, PImage rightKneeImg, PImage leftFootImg, PImage rightFootImg) {
+		body.attachImage(bodyImg);
+		leftEye.attachImage(leftEyeImg);
+		rightEye.attachImage(rightEyeImg);
+		leftHand.attachImage(leftHandImg);
+		rightHand.attachImage(rightHandImg);
+		leftKnee.attachImage(leftKneeImg);
+		rightKnee.attachImage(rightKneeImg);
+		leftFoot.attachImage(leftFootImg);
+		rightFoot.attachImage(rightFootImg);
 	}
 
 /*
