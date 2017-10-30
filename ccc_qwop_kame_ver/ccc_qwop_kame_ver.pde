@@ -39,12 +39,17 @@ void setup() {
 	
 	PImage bodyImg = loadImage("body.png");
 	float characterScale = PLAYER_SIZE/bodyImg.height;
-	sokonKun.attachImages(
-		loadTexture("body.png", characterScale),
+	sokonKun.attachTextures(
+		loadTexture("body.png", characterScale*1.05),
 		loadTexture("left_eye.png", characterScale), loadTexture("right_eye.png", characterScale),
 		loadTexture("left_hand.png", characterScale), loadTexture("right_hand.png", characterScale),
 		loadTexture("left_hand.png", characterScale), loadTexture("right_hand.png", characterScale),
 		loadTexture("left_foot.png", characterScale), loadTexture("right_foot.png", characterScale)
+	);
+	sokonKun.attachTexturesToJoints(
+		loadTexture("left_arm.png", characterScale*1.3, characterScale), loadTexture("right_arm.png", characterScale*1.55, characterScale),
+		loadTexture("left_leg.png", characterScale*1.1, characterScale), loadTexture("right_leg.png", characterScale*1.1, characterScale),
+		loadTexture("left_leg.png", characterScale*1.8, characterScale), loadTexture("right_leg.png", characterScale*1.9, characterScale)
 	);
 
 	obstacles = new Obstacles(width/2, height-GROUND_HEIGHT);
@@ -59,6 +64,7 @@ void draw() {
 	pushMatrix();
 		translate(width/2-sokonKun.getX(), 0);
 		drawGround();
+		sokonKun.drawJointTextures();
 		world.step();
 		world.draw();
 		drawSignBoard();
@@ -145,5 +151,11 @@ void drawGameOver() {
 PImage loadTexture(String path, float scale) {
 	PImage texture = loadImage(path);
 	texture.resize((int)(texture.width*scale), (int)(texture.height*scale));
+	return texture;
+}
+
+PImage loadTexture(String path, float widthScale, float heightScale) {
+	PImage texture = loadImage(path);
+	texture.resize((int)(texture.width*widthScale), (int)(texture.height*heightScale));
 	return texture;
 }

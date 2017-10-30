@@ -18,6 +18,8 @@ class SokonKun {
 	FDistanceJoint
 		leftKnee_leftFoot_dist, rightKnee_rightFoot_dist;
 	
+	PImage leftArmImg, rightArmImg, leftThighImg, rightThighImg, leftLegImg, rightLegImg;
+
 	public SokonKun(float _x, float _y, color _c) {
 		bodyColor = _c;
 		createShape(_x, _y, bodyWidth, _c);
@@ -112,7 +114,16 @@ class SokonKun {
 		return (body == leftHand || body == rightHand);
 	}
 
-	public void attachImages(PImage bodyImg, PImage leftEyeImg, PImage rightEyeImg, PImage leftHandImg, PImage rightHandImg, PImage leftKneeImg, PImage rightKneeImg, PImage leftFootImg, PImage rightFootImg) {
+	public void drawJointTextures() {
+		drawJointTexture(leftArmImg, leftHand, body_leftHand_revo);
+		drawJointTexture(rightArmImg, rightHand, body_rightHand_revo);
+		drawJointTexture(leftThighImg, leftKnee, body_leftKnee_revo);
+		drawJointTexture(rightThighImg, rightKnee, body_rightKnee_revo);
+		drawJointTexture(leftLegImg, leftKnee, leftFoot);
+		drawJointTexture(rightLegImg, rightKnee, rightFoot);
+	}
+
+	public void attachTextures(PImage bodyImg, PImage leftEyeImg, PImage rightEyeImg, PImage leftHandImg, PImage rightHandImg, PImage leftKneeImg, PImage rightKneeImg, PImage leftFootImg, PImage rightFootImg) {
 		body.attachImage(bodyImg);
 		leftEye.attachImage(leftEyeImg);
 		rightEye.attachImage(rightEyeImg);
@@ -122,6 +133,15 @@ class SokonKun {
 		rightKnee.attachImage(rightKneeImg);
 		leftFoot.attachImage(leftFootImg);
 		rightFoot.attachImage(rightFootImg);
+	}
+
+	public void attachTexturesToJoints(PImage leftArmImg, PImage rightArmImg, PImage leftThighImg, PImage rightThighImg, PImage leftLegImg, PImage rightLegImg) {
+		this.leftArmImg = leftArmImg;
+		this.rightArmImg = rightArmImg;
+		this.leftThighImg = leftThighImg;
+		this.rightThighImg = rightThighImg;
+		this.leftLegImg = leftLegImg;
+		this.rightLegImg = rightLegImg;
 	}
 
 /*
@@ -151,147 +171,193 @@ class SokonKun {
 		return (abs(forceX) > bodyW*1000*cos(theta-PI/2) || abs(forceY) > bodyW*1000*sin(theta-PI/2));
 	}
 */
-	private void createShape(float x, float y, float w, color c) {
-		//胴体
-		body = new FCircle(w);
-		body.setPosition(x, y);
-		body.setFillColor(c);
-		body.setNoStroke();
 
-		//目
-		float eyeW = w/4.0;
+	private void drawJointTexture(PImage texture, FBody body, FRevoluteJoint joint) {
+		pushMatrix();
+		float bodyX = body.getX();
+		float bodyY = body.getY();
+		float jointX = joint.getAnchorX();
+		float jointY = joint.getAnchorY();
+		float textureX = (bodyX + jointX)/2;
+		float textureY = (bodyY + jointY)/2;
+		PImage newTexture = texture.copy();
 
-		float leftEyeX = x+( (w+eyeW)/2.0 )*cos(PI*4/3.0);
-		float leftEyeY = y+( (w+eyeW)/2.0 )*sin(PI*4/3.0);
-		leftEye = new FCircle(eyeW);
-		leftEye.setPosition(leftEyeX, leftEyeY);
-		leftEye.setNoStroke();
-		leftEye.setFillColor(c);
-
-		float rightEyeX = x+( (w+eyeW)/2.0 )*cos(PI*5/3.0);
-		float rightEyeY = y+( (w+eyeW)/2.0 )*sin(PI*5/3.0);
-		rightEye = new FCircle(eyeW);
-		rightEye.setPosition(rightEyeX, rightEyeY);
-		rightEye.setNoStroke();
-		rightEye.setFillColor(c);
-
-		//手
-		float handW = w/6.0;
-		float armW = w/sqrt(2);
-
-		float leftHandX = x-w/2.0 + ( armW*cos(PI*5/4.0) );
-		float leftHandY = y + armW*sin(PI*5/4.0);
-		leftHand = new FCircle(handW);
-		leftHand.setPosition(leftHandX, leftHandY);
-		leftHand.setFillColor(c);
-		leftHand.setNoStroke();
-
-		float rightHandX = x+w/2.0 + ( armW*cos(PI*(7/4.0)) );
-		float rightHandY = y + armW*sin(PI*(-1/4.0));
-		rightHand = new FCircle(handW);
-		rightHand.setPosition(rightHandX, rightHandY);
-		rightHand.setFillColor(c);
-		rightHand.setNoStroke();
-
-		//膝
-		float kneeW = w/6.0;
-
-		float leftKneeX = x + (w/2.0)*cos(PI*3/4.0) - w/3.0;
-		float leftKneeY = y + w/2.0;
-		leftKnee = new FCircle(kneeW);
-		leftKnee.setPosition( leftKneeX, leftKneeY );
-		leftKnee.setFillColor(c);
-		leftKnee.setNoStroke();
-
-		float rightKneeX = x + (w/2.0)*cos(PI/4.0) + w/3.0;
-		float rightKneeY = y + w/2.0;
-		rightKnee = new FCircle(kneeW);
-		rightKnee.setPosition( rightKneeX, rightKneeY );
-		rightKnee.setFillColor(c);
-		rightKnee.setNoStroke();
-
-		//足
-		float footW = w/6.0;
-
-		float leftFootX = leftKneeX-w/4.0;
-		float leftFootY = leftKneeY+w/2.0;
-		leftFoot = new FCircle(footW);
-		leftFoot.setPosition(leftFootX, leftFootY);
-		leftFoot.setFillColor(c);
-		leftFoot.setNoStroke();
-
-		float rightFootX = rightKneeX+w/4.0;
-		float rightFootY = rightKneeY+w/2.0;
-		rightFoot = new FCircle(footW);
-		rightFoot.setPosition(rightFootX, rightFootY);
-		rightFoot.setFillColor(c);
-		rightFoot.setNoStroke();
-
-		FBody[] bodies = {body, leftEye, rightEye, leftHand, rightHand, leftKnee, rightKnee, leftFoot, rightFoot};
-		addBodiesToWorld(bodies);
-		
-
-		float leftEyeRootX = x + (w/2.0)*cos(PI*4/3.0);
-		float leftEyeRootY = y + (w/2.0)*sin(PI*4/3.0);
-		body_leftEye_revo = new FRevoluteJoint(body, leftEye, leftEyeRootX, leftEyeRootY);
-		body_leftEye_revo.setEnableLimit(true);
-		body_leftEye_revo.setDrawable(false);
-
-		float rightEyeRootX = x + (w/2.0)*cos(PI*5/3.0);
-		float rightEyeRootY = y + (w/2.0)*sin(PI*5/3.0);
-		body_rightEye_revo = new FRevoluteJoint(body, rightEye, rightEyeRootX, rightEyeRootY);
-		body_rightEye_revo.setEnableLimit(true);
-		body_rightEye_revo.setDrawable(false);
-
-		body_leftHand_revo = new FRevoluteJoint(body, leftHand, x-w/2.0, y);
-		body_leftHand_revo.setEnableLimit(true);
-		body_leftHand_revo.setLowerAngle(-PI/12);
-		body_leftHand_revo.setUpperAngle(PI/12);
-		body_leftHand_revo.setFillColor(c);
-		body_leftHand_revo.setStrokeWeight(w/32);
-		body_leftHand_revo.setStrokeColor(c);
-
-		body_rightHand_revo = new FRevoluteJoint(body, rightHand, x+w/2.0, y);
-		body_rightHand_revo.setEnableLimit(true);
-		body_rightHand_revo.setLowerAngle(-PI/12);
-		body_rightHand_revo.setUpperAngle(PI/12);
-		body_rightHand_revo.setFillColor(c);
-		body_rightHand_revo.setStrokeWeight(w/32);
-		body_rightHand_revo.setStrokeColor(c);
-		
-		float leftLegRootX = x + (w/2.0)*cos(PI*3/4.0);
-		float leftLegRootY = y + (w/2.0)*sin(PI*3/4.0);
-		body_leftKnee_revo = new FRevoluteJoint(body, leftKnee, leftLegRootX, leftLegRootY);
-		body_leftKnee_revo.setFillColor(c);
-		body_leftKnee_revo.setStrokeWeight(w/32);
-		body_leftKnee_revo.setStrokeColor(c);
-		
-		float rightLegRootX = x + (w/2.0)*cos(PI/4.0);
-		float rightLegRootY = y + (w/2.0)*sin(PI/4.0);
-		body_rightKnee_revo = new FRevoluteJoint(body, rightKnee, rightLegRootX, rightLegRootY);
-		body_rightKnee_revo.setFillColor(c);
-		body_rightKnee_revo.setStrokeWeight(w/32);
-		body_rightKnee_revo.setStrokeColor(c);
-		
-		leftKnee_leftFoot_dist = new FDistanceJoint(leftKnee, leftFoot);
-		leftKnee_leftFoot_dist.setFillColor(c);
-		leftKnee_leftFoot_dist.setStrokeWeight(w/32);
-		leftKnee_leftFoot_dist.setStrokeColor(c);
-		
-		rightKnee_rightFoot_dist = new FDistanceJoint(rightKnee, rightFoot);
-		rightKnee_rightFoot_dist.setFillColor(c);
-		rightKnee_rightFoot_dist.setStrokeWeight(w/32);
-		rightKnee_rightFoot_dist.setStrokeColor(c);
-	 
-		FJoint[] joints = {
-			body_leftEye_revo, body_rightEye_revo, 
-			body_leftHand_revo, body_rightHand_revo, 
-			body_leftKnee_revo, body_rightKnee_revo, 
-			leftKnee_leftFoot_dist, rightKnee_rightFoot_dist
-		};
-		addJointsToWorld(joints);
+		translate(textureX, textureY);
+		rotate(atan2(jointY-bodyY, jointX-bodyX));
+		imageMode(CENTER);
+		image(newTexture, 0, 0);
+		popMatrix();
+		imageMode(CORNER);
 	}
 
+	private void drawJointTexture(PImage texture, FBody body1, FBody body2) {
+		pushMatrix();
+		float body1X = body1.getX();
+		float body1Y = body1.getY();
+		float body2X = body2.getX();
+		float body2Y = body2.getY();
+		float textureX = (body1X + body2X)/2;
+		float textureY = (body1Y + body2Y)/2;
+		PImage newTexture = texture.copy();
+
+		translate(textureX, textureY);
+		rotate(atan2(body2Y-body1Y, body2X-body1X));
+		imageMode(CENTER);
+		image(newTexture, 0, 0);
+		popMatrix();
+		imageMode(CORNER);
+	}
+
+	private void createShape(float x, float y, float w, color c) {
+		body = createCircle(x, y, w, c);
+
+		leftEye = createCircle(
+			x+( (w*5/4)/2.0 )*cos(PI*4/3.0),
+			y+( (w*5/4)/2.0 )*sin(PI*4/3.0),
+			w/4.0,
+			c,
+			false
+		);
+
+		rightEye = createCircle(
+			x+( (w*5/4)/2.0 )*cos(PI*5/3.0),
+			y+( (w*5/4)/2.0 )*sin(PI*5/3.0),
+			w/4.0,
+			c,
+			false
+		);
+
+		leftHand = createCircle(
+			x-w/2.0 + ( w/sqrt(2)*cos(PI*5/4.0) ),
+			y + w/sqrt(2)*sin(PI*5/4.0),
+			w/6.0,
+			c,
+			false
+		);
+		
+		rightHand = createCircle(
+			x+w/2.0 + ( w/sqrt(2)*cos(PI*7/4.0) ),
+			y + w/sqrt(2)*sin(-PI/4.0),
+			w/6.0,
+			c,
+			false
+		);
+
+		leftKnee = createCircle(
+			x + (w/2.0)*cos(PI*3/4.0) - w/3.0,
+			y + w/2.0,
+			w/7.0,
+			c
+		);
+
+		rightKnee = createCircle(
+			x + (w/2.0)*cos(PI/4.0) + w/3.0,
+			y + w/2.0,
+			w/7.0,
+			c
+		);
+
+		leftFoot = createCircle(
+			leftKnee.getX()-w/4.0,
+			leftKnee.getY()+w/2.0,
+			w*0.15,
+			c,
+			false
+		);
+
+		rightFoot = createCircle(
+			rightKnee.getX()+w/4.0,
+			rightKnee.getY()+w/2.0,
+			w*0.15,
+			c,
+			false
+		);
+
+		body_leftEye_revo = createRevoluteJoint(
+			body,
+			leftEye,
+			x + (w/2.0)*cos(PI*4/3.0),
+			y + (w/2.0)*sin(PI*4/3.0)
+		);
+
+		body_rightEye_revo = createRevoluteJoint(
+			body,
+			rightEye,
+			x + (w/2.0)*cos(PI*5/3.0),
+			y + (w/2.0)*sin(PI*5/3.0)
+		);
+
+		body_leftHand_revo = createRevoluteJoint(
+			body,
+			leftHand,
+			x-w*0.45,
+			y,
+			-PI/12,
+			PI/12
+		);
+
+		body_rightHand_revo = createRevoluteJoint(
+			body,
+			rightHand,
+			x+w*0.4,
+			y,
+			-PI/12,
+			PI/12
+		);
+
+		body_leftKnee_revo = createRevoluteJoint(
+			body,
+			leftKnee,
+			x + (w*0.5)*cos(PI*0.75),
+			y + (w*0.6)*sin(PI*0.75)
+		);
+		
+		body_rightKnee_revo = createRevoluteJoint(
+			body,
+			rightKnee,
+			x + (w*0.5)*cos(PI/4.0),
+			y + (w*0.6)*sin(PI/4.0)
+		);
+
+		leftKnee_leftFoot_dist = createDistanceJoint(leftKnee, leftFoot);
+		rightKnee_rightFoot_dist = createDistanceJoint(rightKnee, rightFoot);
+	}
+
+	private FCircle createCircle(float x, float y, float w, color c) {
+		return createCircle(x, y, w, c, true);
+	}
+
+	private FCircle createCircle(float x, float y, float w, color c, boolean rotatable) {
+		FCircle circle = new FCircle(w);
+		circle.setPosition(x, y);
+		circle.setFillColor(c);
+		circle.setNoStroke();
+		circle.setRotatable(rotatable);
+		world.add(circle);
+		return circle;
+	}
+
+	private FRevoluteJoint createRevoluteJoint(FBody body1, FBody body2, float x, float y) {
+		FRevoluteJoint joint = new FRevoluteJoint(body1, body2, x, y);
+		joint.setDrawable(false);
+		world.add(joint);
+		return joint;
+	}
+
+	private FRevoluteJoint createRevoluteJoint(FBody body1, FBody body2, float x, float y, float lowerAngle, float upperAngle) {
+		FRevoluteJoint joint = createRevoluteJoint(body1, body2, x, y);
+		joint.setEnableLimit(true);
+		joint.setLowerAngle(lowerAngle);
+		joint.setUpperAngle(upperAngle);
+		return joint;
+	}
+
+	private FDistanceJoint createDistanceJoint(FBody body1, FBody body2) {
+		FDistanceJoint joint = new FDistanceJoint(body1, body2);
+		joint.setDrawable(false);
+		world.add(joint);
+		return joint;
+	}
 
 	private void addBodiesToWorld(FBody[] _bodies) {
 		for (FBody b : _bodies) {
