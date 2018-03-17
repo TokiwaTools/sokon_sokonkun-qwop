@@ -1,5 +1,5 @@
-# 総コンくんQWOP(仮称)
-明大祭2017、｢Sokon Next Amusement Park｣にて体験できるゲーム
+# 総コンくんマラソン
+明大祭2017、｢Sokon Next Amusement Park｣展示のアクションゲーム
 
 ## ルール
 - 総コンくんの脚を操作して走行距離を競う
