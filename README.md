@@ -1,6 +1,8 @@
 # 総コンくんマラソン
 明大祭2017、｢Sokon Next Amusement Park｣展示のアクションゲーム
 
+![Playing Image](image.png)
+
 ## ルール
 - 総コンくんの脚を操作して走行距離を競う
 - 手が地面についたらゲームオーバー
