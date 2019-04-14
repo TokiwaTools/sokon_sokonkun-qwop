@@ -3,6 +3,16 @@
 
 ![Playing Image](playing.png)
 
+## ダウンロード
+
+- [明大祭2日目ver](https://github.com/TokiwaTools/sokon_sokonkun-qwop/releases/tag/1.0)
+
+## 対応環境
+
+- Windows 32/64bit
+- macOS
+- Linux 32/64bit
+
 ## ルール
 - 総コンくんの脚を操作して走行距離を競う
 - 手が地面についたらゲームオーバー
